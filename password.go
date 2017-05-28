@@ -1,6 +1,12 @@
 package main
 
+import (
+	"github.com/google/uuid"
+	"time"
+)
+
 type Pass struct {
-    Pass      string `json:"pass_value"`
-    TTL       int    `json:"ttl"`
+	Id   uuid.UUID     `json:"id"`
+	Pass string        `json:"pass_value"`
+	TTL  time.Duration `json:"ttl"`
 }
