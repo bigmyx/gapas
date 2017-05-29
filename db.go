@@ -2,6 +2,9 @@ package main
 
 import (
 	"github.com/go-redis/redis"
+	"github.com/google/uuid"
+	"time"
+	"errors"
 )
 
 func RedisClient() *redis.Client {
@@ -15,22 +18,25 @@ func RedisClient() *redis.Client {
 
 }
 
-func SetKey(pass Pass) {
+func SetKey(pass Pass) uuid.UUID {
 	client := RedisClient()
+	pass.Id = uuid.New()
+	pass.TTL = time.Minute * 2
 	err := client.Set(pass.Id.String(), pass.Pass, pass.TTL).Err()
 	if err != nil {
 		panic(err)
 	}
+	return pass.Id
 }
 
-func GetKey(pass Pass) string {
+func GetKey(id string) (string, error) {
 	client := RedisClient()
-	val, err := client.Get(pass.Id.String()).Result()
+	val, err := client.Get(id).Result()
 	if err != nil {
-		panic(err)
+		return "", errors.New(err.Error())
 	}
 
-	return val
+	return val, nil
 }
 
 func DelKey(key string) {
